@@ -54,7 +54,7 @@ Contributing
 
 License
 
-- Add the license you prefer (for example MIT). I can add a default license if you want.
+- This project is licensed under the MIT License — see the `LICENSE` file.
 
 Personal note
 This project was born on Mother's Day as a way to bridge distance with a small, meaningful gift. If you'd like, I can create the first commit, add a `.gitignore`, or push the repository to GitHub for you — tell me your GitHub username or remote URL and I will handle it.
