@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Gift, AlertCircle, Clock } from "lucide-react"
 import { decodeGiftCardConfig, isExpired, formatTimeRemaining, type DecodedGiftCard } from "@/lib/gift-card-config"
@@ -13,30 +13,39 @@ import { ConfettiEffect } from "@/components/gift-card/confetti-effect"
 function GiftCardViewer() {
   const searchParams = useSearchParams()
   const [config, setConfig] = useState<DecodedGiftCard | null>(null)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [expired, setExpired] = useState(false)
   const [timeLeft, setTimeLeft] = useState<string | null>(null)
   const [revealed, setRevealed] = useState(false)
   const [showReceipt, setShowReceipt] = useState(false)
   const [confettiActive, setConfettiActive] = useState(false)
+  const voucherRef = useRef<HTMLDivElement>(null)
+  const voucherNumberRef = useRef(
+    Math.floor(Math.random() * 9000000 + 1000000).toString()
+  )
 
   useEffect(() => {
     const param = searchParams.get("config")
     if (!param) {
       setError(true)
+      setLoading(false)
       return
     }
     const decoded = decodeGiftCardConfig(param)
     if (!decoded) {
       setError(true)
+      setLoading(false)
       return
     }
     if (isExpired(decoded.expiresAt)) {
       setExpired(true)
+      setLoading(false)
       return
     }
     setConfig(decoded)
     setTimeLeft(formatTimeRemaining(decoded.expiresAt))
+    setLoading(false)
   }, [searchParams])
 
   // Live countdown for expirable links
@@ -61,6 +70,21 @@ function GiftCardViewer() {
     if (config?.enableSound) {
       playCelebrationSound()
     }
+    setTimeout(() => voucherRef.current?.focus(), 100)
+  }
+
+  // Loading state (prevents flash of error screen)
+  if (loading) {
+    return (
+      <div className="min-h-svh flex items-center justify-center bg-muted">
+        <div className="text-center">
+          <Gift className="h-12 w-12 text-muted-foreground mx-auto mb-3 animate-pulse" />
+          <p className="text-sm text-muted-foreground">
+            Cargando tu regalo...
+          </p>
+        </div>
+      </div>
+    )
   }
 
   // Expired state
@@ -114,9 +138,6 @@ function GiftCardViewer() {
     )
   }
 
-  // Revealed gift card
-  const voucherNumber = Math.floor(Math.random() * 9000000 + 1000000).toString()
-
   return (
     <div
       className="min-h-svh flex flex-col items-center justify-center px-4 py-10 relative"
@@ -135,10 +156,10 @@ function GiftCardViewer() {
       />
 
       {/* Voucher card */}
-      <div className="w-full max-w-md animate-in slide-in-from-bottom-6 fade-in duration-700">
+      <div ref={voucherRef} tabIndex={-1} aria-live="polite" className="w-full max-w-md animate-in slide-in-from-bottom-6 fade-in duration-700 outline-none">
         <Voucher
           config={config}
-          voucherNumber={voucherNumber}
+          voucherNumber={voucherNumberRef.current}
           onViewReceipt={
             config.receiptUrl ? () => setShowReceipt(true) : undefined
           }

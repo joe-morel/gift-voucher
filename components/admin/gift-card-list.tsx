@@ -97,6 +97,7 @@ export function GiftCardList({
                 onClick={() => handleCopy(card)}
                 className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg hover:bg-muted transition-colors cursor-pointer"
                 title="Copiar enlace"
+                aria-label="Copiar enlace"
               >
                 <Copy className="h-3 w-3" />
               </button>
@@ -104,6 +105,7 @@ export function GiftCardList({
                 onClick={() => handleWhatsApp(card)}
                 className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg hover:bg-muted transition-colors cursor-pointer"
                 title="Enviar por WhatsApp"
+                aria-label="Enviar por WhatsApp"
               >
                 <Share2 className="h-3 w-3" />
               </button>
@@ -111,6 +113,7 @@ export function GiftCardList({
                 onClick={() => handleDelete(card.id)}
                 className="flex items-center gap-1 text-xs px-2.5 py-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors cursor-pointer ml-auto"
                 title="Eliminar"
+                aria-label="Eliminar gift card"
               >
                 <Trash2 className="h-3 w-3" />
               </button>

@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import ReactConfetti from "react-confetti"
+import dynamic from "next/dynamic"
+
+const ReactConfetti = dynamic(() => import("react-confetti"), { ssr: false })
 
 interface ConfettiEffectProps {
   active: boolean

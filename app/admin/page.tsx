@@ -11,6 +11,7 @@ import {
 } from "@/lib/gift-card-config"
 
 const STORAGE_KEY = "giftcards_v2"
+const SCHEMA_VERSION = 2
 
 type View = "list" | "editor"
 
@@ -18,14 +19,21 @@ function loadCards(): GiftCardConfig[] {
   if (typeof window === "undefined") return []
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    return raw ? JSON.parse(raw) : []
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    // Backward-compatible: reads old array format and new versioned format
+    const cards = Array.isArray(parsed) ? parsed : parsed.cards ?? []
+    return cards
   } catch {
     return []
   }
 }
 
 function saveCards(cards: GiftCardConfig[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cards))
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    _version: SCHEMA_VERSION,
+    cards,
+  }))
 }
 
 export default function AdminPage() {
@@ -106,6 +114,7 @@ export default function AdminPage() {
               <button
                 onClick={() => setView("list")}
                 className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg hover:bg-muted transition-colors cursor-pointer text-muted-foreground"
+                aria-label="Ver mis gift cards"
               >
                 <LayoutGrid className="h-4 w-4" />
                 <span className="hidden sm:inline">Mis Gift Cards</span>
@@ -124,7 +133,7 @@ export default function AdminPage() {
       </header>
 
       {/* Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+      <main id="main-content" className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
         {view === "list" && (
           <div className="space-y-6">
             <div>

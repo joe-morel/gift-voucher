@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useRef } from "react"
 import { X, ExternalLink } from "lucide-react"
 import Image from "next/image"
 
@@ -10,12 +11,32 @@ interface ReceiptModalProps {
 }
 
 export function ReceiptModal({ receiptUrl, open, onClose }: ReceiptModalProps) {
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (open) {
+      closeButtonRef.current?.focus()
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose()
+    }
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [open, onClose])
+
   if (!open) return null
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="receipt-title"
     >
       <div
         className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[85vh] overflow-hidden animate-in fade-in zoom-in-95 duration-300"
@@ -23,10 +44,11 @@ export function ReceiptModal({ receiptUrl, open, onClose }: ReceiptModalProps) {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h3 className="font-semibold text-foreground">
+          <h3 id="receipt-title" className="font-semibold text-foreground">
             Comprobante de Transferencia
           </h3>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
             className="h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted transition-colors cursor-pointer"
             aria-label="Cerrar"

@@ -26,7 +26,6 @@ export const metadata: Metadata = {
     description:
       "Personaliza tu voucher, adjunta tu comprobante y comparte por WhatsApp.",
   },
-    generator: 'v0.app'
 }
 
 export const viewport: Viewport = {
@@ -45,6 +44,12 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-background focus:text-foreground"
+        >
+          Saltar al contenido principal
+        </a>
         {children}
         <Toaster position="top-right" richColors />
       </body>

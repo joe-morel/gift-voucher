@@ -27,6 +27,7 @@ const DEMO_CONFIG = {
   bgColor: "#faf5ff",
   enableSound: true,
   enableConfetti: true,
+  expiresAt: null,
 }
 
 const FEATURES = [
@@ -84,7 +85,7 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content">
         {/* Hero Section */}
         <section className="py-16 sm:py-24 px-4 sm:px-6">
           <div className="max-w-5xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16">

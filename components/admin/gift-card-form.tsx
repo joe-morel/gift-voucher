@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,14 +26,11 @@ interface GiftCardFormProps {
 }
 
 export function GiftCardForm({ config, onChange, onSave }: GiftCardFormProps) {
-  const [shareUrl, setShareUrl] = useState("");
   const [showPreview, setShowPreview] = useState(false);
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setShareUrl(generateShareUrl(config, window.location.origin));
-    }
-  }, [config]);
+  const shareUrl = typeof window !== "undefined"
+    ? generateShareUrl(config, window.location.origin)
+    : "";
 
   function updateField<K extends keyof GiftCardConfig>(
     key: K,
@@ -77,7 +74,7 @@ export function GiftCardForm({ config, onChange, onSave }: GiftCardFormProps) {
     toast.success("Gift card guardada correctamente");
   }
 
-  const previewConfig = {
+  const previewConfig = useMemo(() => ({
     recipientName: config.recipientName,
     currency: config.currency,
     amount: config.amount,
@@ -91,7 +88,8 @@ export function GiftCardForm({ config, onChange, onSave }: GiftCardFormProps) {
     bgColor: config.bgColor,
     enableSound: config.enableSound,
     enableConfetti: config.enableConfetti,
-  };
+    expiresAt: null,
+  }), [config]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -222,6 +220,7 @@ export function GiftCardForm({ config, onChange, onSave }: GiftCardFormProps) {
                   value={config.primaryColor}
                   onChange={(e) => updateField("primaryColor", e.target.value)}
                   className="h-9 w-12 rounded cursor-pointer border"
+                  aria-label="Seleccionar color primario"
                 />
                 <Input
                   value={config.primaryColor}
@@ -241,6 +240,7 @@ export function GiftCardForm({ config, onChange, onSave }: GiftCardFormProps) {
                     updateField("secondaryColor", e.target.value)
                   }
                   className="h-9 w-12 rounded cursor-pointer border"
+                  aria-label="Seleccionar color secundario"
                 />
                 <Input
                   value={config.secondaryColor}
@@ -260,6 +260,7 @@ export function GiftCardForm({ config, onChange, onSave }: GiftCardFormProps) {
                   value={config.bgColor}
                   onChange={(e) => updateField("bgColor", e.target.value)}
                   className="h-9 w-12 rounded cursor-pointer border"
+                  aria-label="Seleccionar color de fondo"
                 />
                 <Input
                   value={config.bgColor}
